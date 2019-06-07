@@ -1,0 +1,20 @@
+from python:3 as b1
+
+workdir /usr/src/app
+
+copy requirements.txt .
+run pip install -r requirements.txt     # %%DATE%%
+
+copy *.py *.md ./
+copy werewolf werewolf
+run pip install .
+
+from python:3
+
+copy --from=b1 /usr/local/ /usr/local/
+
+# entrypoint ["sh", "-c"]
+# cmd ["slackbot"]
+cmd ["gunicorn", "-b", "0.0.0.0:5002", "--workers", "1", "--threads", "4", "werewolf.app:app"]
+
+expose 5002

@@ -1,0 +1,9 @@
+teams:
+  TEAM-ID-GOES-HERE:
+    name: team-name
+    token: verification-token
+    client-id: "APP_CLIENT-ID"
+    client-secret: "APP_CLIENT_SECRET"
+    oauth-uri: https://should-you-want-to-generate-oauth-tokens/slack/werewolf/oauth/
+    bot-oauth: xoxb-something
+    oauth: xoxp-something

@@ -1,0 +1,82 @@
+name: standard
+blurb: |
+      This is a standard game. There are six members of the villager team:
+      three villagers, a hero, a bodyguard and a seer.
+      The evil team is comprised of three members:
+      two werewolves, and a sorceror, who is not known to them.
+roles:
+  - {name: villager, count: 3}
+  - {name: hero, commands: [vote, hero]}
+  - {name: bodyguard, commands: [vote, protect]}
+  - {name: seer, commands: [vote, seer]}
+  - {name: werewolf, count: 2, rooms: [evil], team: evil, commands: [vote, kill]}
+  - {name: sorceror, team: evil, commands: [vote, sorceror]}
+prelim:
+  - name: first night
+    handler: night
+    duration: 5m
+    resolution: [sorceror, seer]
+    entry_message: |
+      An ominous night draws in. Dark clouds hide the full moon.
+      Villagers lock their doors and shutter their windows warily.
+    exit_message: |
+      The first night has passed uneventfully...
+      Or has it?
+phases:
+  - name: day
+    duration: 25m
+    entry_message: |
+      Dawn breaks over the sleepy village.
+      It is time to hunt out evil!
+    exit_message: |
+      Day comes to an end.
+      It is time for village justice to be served!
+  - name: night
+    duration: 5m
+    resolution: [protect, sorceror, seer, kill]
+    entry_message: |
+      Night descends as the frightened villages scurry for shelter.
+      Evil things prowl the darkness!
+    exit_message: |
+      The night finally comes to an end.
+      What horrors have passed in the darkness?
+---
+name: village-of-visions
+blurb: |
+      Welcome to the Village of Visions!
+      The setup for this game is as follows: there are three villagers and one seer versus the werewolf.
+      The werewolf has sorcerous powers and may attempt to identify the seer, as well as hunting.
+      On the first night, the werewolf gets one free use of their sorcerous powers.
+roles:
+  - {name: villager, count: 3}
+  - {name: seer, commands: [vote, seer]}
+  - {name: werewolf, team: evil, commands: [vote, kill, sorceror]}
+prelim:
+  - name: first night
+    handler: night
+    duration: 5m
+    resolution: [sorceror]
+    entry_message: |
+      An ominous night draws in. Dark clouds hide the full moon.
+      Villagers lock their doors and shutter their windows warily.
+    exit_message: |
+      The first night has passed uneventfully...
+      Or has it?
+phases:
+  - name: day
+    duration: 25m
+    entry_message: |
+      Dawn breaks over the sleepy village.
+      It is time to hunt out evil!
+    exit_message: |
+      Day comes to an end.
+      It is time for village justice to be served!
+  - name: night
+    duration: 5m
+    resolution: [sorceror, seer, kill]
+    entry_message: |
+      Night descends as the frightened villages scurry for shelter.
+      Evil things prowl the darkness!
+    exit_message: |
+      The night finally comes to an end.
+      What horrors have passed in the darkness?
