@@ -5,7 +5,8 @@ import queue
 import threading
 import time
 
-from .service import load_config, validate_token, get_service, Agent, Channel
+from .service import Agent, Channel
+from .service.slack import load_config, validate_token, get_service
 from .dispatch import QueuingDispatch, MuxDispatch
 from .game import GeneralWerewolf, SpecificWerewolf
 from .persist import load

@@ -1,6 +1,6 @@
 from collections import defaultdict
 import logging
-from .service import Channel, Notice
+from werewolf.service import Channel, Notice
 
 
 LOG = logging.getLogger(__name__)

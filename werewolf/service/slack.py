@@ -1,13 +1,12 @@
 from base64 import b64encode as b64
 import cachetools
-from collections import namedtuple
 import logging
 import os
 import requests
 import urllib.parse
 import yaml
-from .sentinel import Sentinel
-
+from ..sentinel import Sentinel
+from .base import Agent, Channel, Notice, BaseService
 
 LOG = logging.getLogger(__name__)
 
@@ -39,20 +38,7 @@ def validate_token(token):
     return token in TOKENS
 
 
-class Channel(namedtuple('Channel', ('id', 'name', 'is_private', 'is_im'), defaults=(None, None, False, False))):
-    def replace(self, **kwargs):
-        return self._replace(**kwargs)
-
-
-class Agent(namedtuple('Agent', ('id', 'name', 'is_bot', 'real_name'), defaults=(None, None, False, None))):
-    def replace(self, **kwargs):
-        return self._replace(**kwargs)
-
-
-Notice = namedtuple('Notice', ('channel', 'id'))
-
-
-class Service:
+class Service(BaseService):
     IM_PLACEHOLDER = Sentinel("(im)")
     OAUTH_HANDOFF = 'https://slack.com/oauth/authorize'
     OAUTH_ACCESS = 'https://slack.com/api/oauth.access'

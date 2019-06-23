@@ -5,7 +5,7 @@ import unittest
 import unittest.mock
 import yaml
 from .service import Agent
-from .service_test import MockService
+from werewolf.service.service_test import MockService
 from .game import SpecificWerewolf
 from .roles import VILLAGERS, EVIL, HERO, WEREWOLF, VILLAGER, SORCEROR, SEER
 from .rules import load_game, load_games, game_type

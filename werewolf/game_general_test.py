@@ -1,7 +1,7 @@
 from .game import GeneralWerewolf
 from .game_test import agent_names
 from .service import Agent
-from .service_test import MockService
+from werewolf.service.service_test import MockService
 from .text import Text
 
 
