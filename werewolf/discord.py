@@ -2,6 +2,7 @@ import discord
 import logging
 import queue
 
+from .service import Agent, Channel
 from .service.discord import Service, load_config, token
 from .dispatch import QueuingDispatch, MuxDispatch
 from .game import GeneralWerewolf, SpecificWerewolf
@@ -28,7 +29,7 @@ RUNNER.start()
 
 # Set up logging
 logging.basicConfig(level=logging.DEBUG)
-logging.getLogger('werewolf.text').setLevel(logging.INFO)
+# logging.getLogger('werewolf.text').setLevel(logging.INFO)
 
 # @app.before_first_request
 # def activate_timer():
@@ -43,27 +44,27 @@ logging.getLogger('werewolf.text').setLevel(logging.INFO)
 
 def main():
     bot = discord.Client()
-    srv = Service(client=bot)
+    Service.init(client=bot)
 
     @bot.event
     async def on_ready():
         print("The bot is ready!")
-        srv.guild = bot.guilds[0]
 
     @bot.event
     async def on_message(message):
         if message.author == bot.user:
             return
         if message.type == discord.MessageType.default:
-            channel = message.channel
-            sender = message.author
-            receivers = [message.guild.me]
+            channel = Channel(id=message.channel.id)
+            sender = Agent(id=message.author.id)
+            receivers = [Agent(id=message.guild.me.id, is_bot=True)]
             text = message.content
             ts = message.id
-            DISPATCHER.raw_message(srv=srv, sender=sender, channel=channel, receivers=receivers,
+            LOG.debug("raw message: %r", text)
+            DISPATCHER.raw_message(srv=Service(guild=message.guild),
+                                   sender=sender, channel=channel, receivers=receivers,
                                    text=text, message_id=ts)
 
-    print("about to run")
     bot.run(token())
 
 
