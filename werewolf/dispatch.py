@@ -50,7 +50,6 @@ class DequeuingDispatch(BaseDispatch, threading.Thread):
     def __init__(self, queue=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.queue = queue
-        self.thread = threading.Thread()
 
     def run(self):
         while True:
