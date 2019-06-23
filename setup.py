@@ -29,6 +29,7 @@ setup(
     install_requires=[
         'autobahn',
         'cachetools',
+        'discord',
         'flask',
         'flock',
         'gunicorn',

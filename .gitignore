@@ -5,3 +5,6 @@ __pycache__/
 /data/
 /Dockerfile.werewolf
 /.pytest_cache/
+/config.yaml
+/discord.yaml
+/slack.yaml

@@ -2,18 +2,24 @@ import logging
 import os
 import os.path
 import pickle
+import tempfile
 
 LOG = logging.getLogger(__name__)
 
 DATA_DIR = None
 
 
-def save(key, obj):
+def _data_dir():
     global DATA_DIR
-    DATA_DIR = DATA_DIR or os.environ['DATA_DIR']
+    DATA_DIR = DATA_DIR or os.environ.get('DATA_DIR') or tempfile.mkdtemp()
+    return DATA_DIR
+
+
+def save(key, obj):
+    dir = _data_dir()
     key = str(key)
-    file = os.path.join(DATA_DIR, key)
-    temp = os.path.join(DATA_DIR, key + "~")
+    file = os.path.join(dir, key)
+    temp = os.path.join(dir, key + "~")
     store = obj.save()
 
     try:
@@ -29,10 +35,9 @@ def save(key, obj):
 
 
 def load(key, default=None, factory=None):
-    global DATA_DIR
-    DATA_DIR = DATA_DIR or os.environ['DATA_DIR']
+    dir = _data_dir()
     key = str(key)
-    file = os.path.join(DATA_DIR, key)
+    file = os.path.join(dir, key)
     try:
         with open(file, 'rb') as f:
             store = pickle.load(f)
@@ -42,10 +47,9 @@ def load(key, default=None, factory=None):
 
 
 def drop(key):
-    global DATA_DIR
-    DATA_DIR = DATA_DIR or os.environ['DATA_DIR']
+    dir = _data_dir()
     key = str(key)
-    file = os.path.join(DATA_DIR, key)
+    file = os.path.join(dir, key)
     try:
         os.unlink(file)
     except IOError:
