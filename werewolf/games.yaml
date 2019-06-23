@@ -80,3 +80,38 @@ phases:
     exit_message: |
       The night finally comes to an end.
       What horrors have passed in the darkness?
+---
+name: single
+blurb: |
+      This is only a single-player setup for testing
+roles:
+  - {name: villager, count: 1}
+prelim:
+  - name: first night
+    handler: night
+    duration: 1m
+    resolution: [sorceror]
+    entry_message: |
+      An ominous night draws in. Dark clouds hide the full moon.
+      Villagers lock their doors and shutter their windows warily.
+    exit_message: |
+      The first night has passed uneventfully...
+      Or has it?
+phases:
+  - name: day
+    duration: 2m
+    entry_message: |
+      Dawn breaks over the sleepy village.
+      It is time to hunt out evil!
+    exit_message: |
+      Day comes to an end.
+      It is time for village justice to be served!
+  - name: night
+    duration: 2m
+    resolution: [sorceror, seer, kill]
+    entry_message: |
+      Night descends as the frightened villages scurry for shelter.
+      Evil things prowl the darkness!
+    exit_message: |
+      The night finally comes to an end.
+      What horrors have passed in the darkness?

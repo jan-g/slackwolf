@@ -44,7 +44,7 @@ def make_sync(f):
     @functools.wraps(f)
     def sync(self, *args, **kwargs):
         result_queue = queue.Queue()
-        kwargs['guild'] = self.guild
+        kwargs['team'] = self.team
         message = Service.ServiceMessage(f, (self, *args), kwargs, result_queue)
         self.client.loop.call_soon_threadsafe(asyncio.ensure_future, self.queue.put(message))
         return result_queue.get()
@@ -63,7 +63,7 @@ class Service(BaseService):
         asyncio.ensure_future(cls._service_loop())
 
     def __init__(self, guild=None, *args, **kwargs):
-        self.guild = guild
+        self.team = guild
         self._user_cache = cachetools.TTLCache(maxsize=1024, ttl=600)
         self._channel_cache = cachetools.TTLCache(maxsize=1024, ttl=600)
 
@@ -75,39 +75,41 @@ class Service(BaseService):
             message.result.put(result)
 
     @make_sync
-    async def broadcast(self, channel=None, text=None, guild=None):
+    async def broadcast(self, channel=None, text=None, team=None):
         if not hasattr(channel, 'chan'):
-            channel = await self.lookup_channel._async(self, channel=channel, guild=guild)
+            channel = await self.lookup_channel._async(self, channel=channel, team=team)
         return await channel.chan.send(text)
 
     @make_sync
-    async def new_channel(self, name=None, private=False, invite=None, guild=None):
+    async def new_channel(self, name=None, private=False, invite=None, team=None):
         overwrites = {}
         if private:
             overwrites = {
-                guild.default_role: discord.PermissionOverwrite(read_messages=False),
-                guild.me: discord.PermissionOverwrite(read_messages=True)
+                team.default_role: discord.PermissionOverwrite(read_messages=False),
+                team.me: discord.PermissionOverwrite(read_messages=True)
             }
-        chan = await guild.make_text_channel(name, overwrites=overwrites)
+        chan = await team.create_text_channel(name, overwrites=overwrites)
         channel = Channel(id=chan.id, name=chan.name)
-        channel.channel = chan
-        await self.invite_to_channel._async(self, guild=guild, channel=channel, invite=invite)
-        return Channel(id=channel.id)
+        channel.chan = chan
+        await self.invite_to_channel._async(self, team=team, channel=channel, invite=invite)
+        return channel
 
-    def delete_channel(self, channel=None, guild=None):
+    def delete_channel(self, channel=None, team=None):
         pass
 
     @make_sync
-    async def invite_to_channel(self, channel=None, invite=None, guild=None):
+    async def invite_to_channel(self, channel=None, invite=None, team=None):
         if invite is None:
             return
-        if not hasattr(channel, 'channel'):
-            channel = await self.lookup_channel._async(self, channel=channel, guild=guild)
+        if not hasattr(channel, 'chan'):
+            channel = await self.lookup_channel._async(self, channel=channel, team=team)
         for agent in invite:
-            await channel.set_permissions(agent, read_messages=True, send_messages=True)
+            if not hasattr(agent, 'user'):
+                agent = await self.lookup_user._async(self, agent=agent, team=team)
+            await channel.chan.set_permissions(agent.user, read_messages=True, send_messages=True)
 
     @make_sync
-    async def lookup_channel(self, channel=None, guild=None):
+    async def lookup_channel(self, channel=None, team=None):
         if channel.name is not None:
             return channel
         cid = int(channel.id)
@@ -115,7 +117,7 @@ class Service(BaseService):
         if cached is not None:
             return cached
         # Do the lookup
-        chan = guild.get_channel(cid)
+        chan = team.get_channel(cid)
         channel = channel.replace(id=cid, name=chan.name)
         channel.chan = chan
         self._channel_cache[channel.id] = channel
@@ -123,7 +125,7 @@ class Service(BaseService):
         return channel
 
     @make_sync
-    async def lookup_user(self, agent=None, guild=None):
+    async def lookup_user(self, agent=None, team=None):
         LOG.debug("Looking up user details: %s", agent)
         if agent.name is not None:
             return agent
@@ -133,7 +135,7 @@ class Service(BaseService):
             LOG.debug('Cache finds agent id %r with %s', aid, cached)
             return cached
         # Do the lookup
-        user = guild.get_member(aid)
+        user = team.get_member(aid)
         if user is not None:
             agent = agent.replace(id=aid,
                                   name=user.name,
@@ -152,13 +154,13 @@ class Service(BaseService):
         pass
 
     @make_sync
-    async def post_notice(self, channel=None, notice=None, text=None, guild=None):
+    async def post_notice(self, channel=None, notice=None, text=None, team=None):
         pass
 
     @make_sync
-    async def delete_message(self, channel=None, message_id=None, guild=None):
+    async def delete_message(self, channel=None, message_id=None, team=None):
         pass
 
     @make_sync
-    async def whisper(self, channel=None, agent=None, text=None, guild=None):
+    async def whisper(self, channel=None, agent=None, text=None, team=None):
         pass
