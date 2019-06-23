@@ -5,10 +5,16 @@ class Channel(namedtuple('Channel', ('id', 'name', 'is_private', 'is_im'), defau
     def replace(self, **kwargs):
         return self._replace(**kwargs)
 
+    def __getstate__(self):
+        return None
+
 
 class Agent(namedtuple('Agent', ('id', 'name', 'is_bot', 'real_name'), defaults=(None, None, False, None))):
     def replace(self, **kwargs):
         return self._replace(**kwargs)
+
+    def __getstate__(self):
+        return None
 
 
 Notice = namedtuple('Notice', ('channel', 'id'))

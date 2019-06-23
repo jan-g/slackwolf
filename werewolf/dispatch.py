@@ -2,6 +2,7 @@ from collections import namedtuple
 import logging
 from recordtype import recordtype
 import threading
+from .service import Channel
 from .persist import load, save
 from .text import Text
 
@@ -134,7 +135,7 @@ class MuxDispatch(DequeuingDispatch):
         save('mux', self)
 
     def save(self):
-        return [{'target': target.index, 'channels': channels} for target, channels in self.target_map.items()]
+        return [{'target': target.index, 'channels': [c.id for c in channels]} for target, channels in self.target_map.items()]
 
     @classmethod
     def load(cls, value, default_type=None, default_factory=None, target_factory=None, **kwargs):
@@ -146,7 +147,7 @@ class MuxDispatch(DequeuingDispatch):
         for item in value:
             target = load(item['target'], default=lambda: None, factory=target_factory)
             if target is not None:
-                channels = item['channels']
+                channels = [Channel(id=c) for c in item['channels']]
                 target_map[target] = channels
                 for channel in channels:
                     channel_map[channel] = target
