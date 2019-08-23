@@ -48,6 +48,7 @@ def root(*args, **kwargs):
         return flask.Response('', status=401)
 
     if args.get('challenge') is not None:
+        LOG.debug("request is %s", args)
         return flask.Response(args['challenge'], 200)
 
     team = args.get('team_id')

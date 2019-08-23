@@ -42,7 +42,7 @@ class GeneralWerewolf(BaseDispatch):
         players = list(set(players))
         rules = game_type(name=game_name, number=len(players))
         if rules is None:
-            srv.broadcast(channel, Text("I don't know how to play a game of ", game_type))
+            srv.broadcast(channel, Text("I don't know how to play a game of ", game_name))
             return
         LOG.debug("rules are %s", rules)
         if len(players) != len(rules['roles']):
